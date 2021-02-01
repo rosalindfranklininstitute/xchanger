@@ -11,7 +11,7 @@ dotenv.load_dotenv()
 
 TEST_USERNAME = os.environ.get('TEST_USERNAME')
 TEST_PASSWORD = os.environ.get('TEST_PASSWORD')
-SERVICE_URL = os.environ.get('STORE_URL')
+SERVICE_URL = os.environ.get('SERVICE_URL')
 LOG_PATH = os.environ.get('LOG_PATH')
 
 logging.basicConfig(filename=LOG_PATH + 'example.log', level=logging.INFO)
@@ -52,7 +52,7 @@ def main():
         logging.info("retrieving message...")
         print(body)
         if body is not None:
-                 response = contact_service(body)
+                 response = contact_service({"output":body.decode()})
                  logging.info(response.status())
 
         ch.basic_ack(delivery_tag=method.delivery_tag)
