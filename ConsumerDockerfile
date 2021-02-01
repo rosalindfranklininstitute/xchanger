@@ -1,0 +1,17 @@
+FROM continuumio/miniconda
+
+WORKDIR /app
+
+
+COPY .env .
+COPY main.py .
+COPY xchanger_requirements.txt .
+
+
+
+# Make sure the environment is activated:
+RUN  pip install -r xchanger_requirements.txt
+
+
+ENTRYPOINT ["python", "main.py"]
+
