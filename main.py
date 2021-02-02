@@ -1,7 +1,6 @@
 import pika
 import os
 import requests
-import ast
 import sys
 import logging
 import dotenv
@@ -31,7 +30,7 @@ def contact_service(body):
         return None
 
     try:
-        response = requests.post(SERVICE_URL + 'receive_async_messages', json=body,
+        response = requests.post(SERVICE_URL + 'receive_async_messages', json=dict(AsynchronousMessage=body),
                                  headers=make_headers(access_token))
         response.raise_for_status()
     except requests.exceptions.HTTPError as err:
@@ -50,10 +49,10 @@ def main():
     def callback(ch, method, properties, body):
         logging.info(" [x] Received from rabbitmq")
         logging.info("retrieving message...")
-        print(body)
+
         if body is not None:
-                 response = contact_service({"output":body.decode()})
-                 logging.info(response.status())
+            response = contact_service(body.decode())
+            logging.info(response.status())
 
         ch.basic_ack(delivery_tag=method.delivery_tag)
         logging.info('presigned URL returned')
