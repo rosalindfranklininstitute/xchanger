@@ -1,57 +1,51 @@
 import pika
 import os
-import requests
+import yaml
 import sys
 import logging
 import dotenv
+from microservice import MicroService
+from munch import Munch
 
 dotenv.load_dotenv()
 
 
 TEST_USERNAME = os.environ.get('TEST_USERNAME')
 TEST_PASSWORD = os.environ.get('TEST_PASSWORD')
-SERVICE_URL = os.environ.get('SERVICE_URL')
 LOG_PATH = os.environ.get('LOG_PATH')
+CONFIG_PATH = os.environ.get('CONFIG_PATH')
 
 logging.basicConfig(filename=LOG_PATH + 'example.log', level=logging.INFO)
 
-
-def make_headers(jwt):
-    return {'Authorization': 'Bearer {}'.format(jwt)}
-
-
-def contact_service(body):
+def read_microservice_config(config_path):
     try:
-        r = requests.post(SERVICE_URL + "token", json=dict(username=TEST_USERNAME, password=TEST_PASSWORD))
-        access_token = r.json()['access_token']
-        r.raise_for_status()
-    except requests.exceptions.HTTPError as err:
-        logging.error(err)
+        microservice_config = yaml.load(config_path)
+    except Exception as e:
+        logging.error(e)
         return None
-
-    try:
-        response = requests.post(SERVICE_URL + 'receive_async_messages', json=dict(AsynchronousMessage=body),
-                                 headers=make_headers(access_token))
-        response.raise_for_status()
-    except requests.exceptions.HTTPError as err:
-        logging.error(err)
-        return None
-
-    return response.json()
+    microservice_config = Munch(microservice_config)
+    return microservice_config
 
 
 def main():
-
+    # connect to rabbitmq
     parameters = pika.connection.URLParameters(os.environ.get('AMPQ_URI'))
     connection = pika.BlockingConnection(parameters)
     channel = connection.channel()
+
+    # set up microservice
+    service_config = read_microservice_config(CONFIG_PATH)
+    service = MicroService(service_config.service_name, service_config.service_url)
+
 
     def callback(ch, method, properties, body):
         logging.info(" [x] Received from rabbitmq")
         logging.info("retrieving message...")
 
         if body is not None:
-            response = contact_service(body.decode())
+            response = service.contact_service(service_config.security_route_name,
+                                               service_config.message_route_name,
+                                               {service_config.message_route_key: body.decode()})
             logging.info(response.status())
 
         ch.basic_ack(delivery_tag=method.delivery_tag)
