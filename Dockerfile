@@ -4,14 +4,16 @@ WORKDIR /app
 
 
 COPY .env .
-COPY main.py .
+RUN mkdir xchanger
+COPY xchanger xchanger
 COPY xchanger_requirements.txt .
-
+RUN mkdir configs
+COPY configs/* configs
 
 
 # Make sure the environment is activated:
 RUN  pip install -r xchanger_requirements.txt
 
 
-ENTRYPOINT ["python", "main.py"]
+ENTRYPOINT ["python", "-m", "xchanger.main"]
 

@@ -4,7 +4,7 @@ import yaml
 import sys
 import logging
 import dotenv
-from microservice import MicroService
+from .microservice import MicroService
 from munch import Munch
 
 dotenv.load_dotenv()

@@ -1,0 +1,5 @@
+service_name: name of my service
+service_url: url of this service
+security_route_name: the page name of the route to generate a security token i.e 'login'
+message_route_name: the page name of the route that will receive messages from xchanger i.e 'receive_messages'
+message_route_key: the receive messages route will be expected to take a json of the form message_key, message_body. This asks for the key in that json.

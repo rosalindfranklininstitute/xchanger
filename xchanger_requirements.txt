@@ -2,3 +2,5 @@ logging
 python-dotenv
 pika
 requests
+pyyaml
+munch

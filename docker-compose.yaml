@@ -1,0 +1,27 @@
+version: "3.8"
+services:
+  local-rabbitmq:
+    hostname: local-rabbitmq
+    image: 'bitnami/rabbitmq:latest'
+    labels:
+      kompose.service.type: nodeport
+    ports:
+      - '4369:4369'
+      - '5672:5672'
+      - '25672:25672'
+      - '15672:15672'
+    volumes:
+      - 'rabbitmq_data:/bitnami'
+  xchanger:
+    build:
+        context: .
+        dockerfile: Dockerfile
+    env_file:
+        # create this file yourself!
+        - .env
+    image: xchanger
+    depends_on:
+      - local-rabbitmq
+volumes:
+    rabbitmq_data:
+      driver: local
