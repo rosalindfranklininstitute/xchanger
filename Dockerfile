@@ -1,4 +1,4 @@
-FROM continuumio/miniconda
+FROM continuumio/miniconda3
 
 WORKDIR /app
 
@@ -8,7 +8,7 @@ RUN mkdir xchanger
 COPY xchanger xchanger
 COPY xchanger_requirements.txt .
 RUN mkdir configs
-COPY configs/* configs
+COPY configs configs
 
 
 # Make sure the environment is activated:

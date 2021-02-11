@@ -4,7 +4,7 @@ import yaml
 import sys
 import logging
 import dotenv
-from .microservice import MicroService
+from xchanger.microservice import MicroService
 from munch import Munch
 
 dotenv.load_dotenv()
@@ -15,28 +15,38 @@ TEST_PASSWORD = os.environ.get('TEST_PASSWORD')
 LOG_PATH = os.environ.get('LOG_PATH')
 CONFIG_PATH = os.environ.get('CONFIG_PATH')
 
-logging.basicConfig(filename=LOG_PATH + 'example.log', level=logging.INFO)
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    handlers=[
+        logging.FileHandler(os.environ.get('LOG_PATH') + "debug.log"),
+        logging.StreamHandler()
+    ]
+)
 
 def read_microservice_config(config_path):
     try:
-        microservice_config = yaml.load(config_path)
+        with open(config_path) as f:
+            microservice_config = yaml.load(f, Loader=yaml.FullLoader)
     except Exception as e:
         logging.error(e)
         return None
-    microservice_config = Munch(microservice_config)
-    return microservice_config
 
+    microservice_config = Munch(microservice_config)
+    logging.info(microservice_config)
+    return microservice_config
 
 def main():
     # connect to rabbitmq
+    logging.info("starting xchanger....")
     parameters = pika.connection.URLParameters(os.environ.get('AMPQ_URI'))
     connection = pika.BlockingConnection(parameters)
     channel = connection.channel()
 
+    logging.info("loading service config")
     # set up microservice
     service_config = read_microservice_config(CONFIG_PATH)
     service = MicroService(service_config.service_name, service_config.service_url)
-
 
     def callback(ch, method, properties, body):
         logging.info(" [x] Received from rabbitmq")

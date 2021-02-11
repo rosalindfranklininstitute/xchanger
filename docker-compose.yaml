@@ -22,6 +22,8 @@ services:
     image: xchanger
     depends_on:
       - local-rabbitmq
+    volumes:
+       - ./configs:/app/configs
 volumes:
     rabbitmq_data:
       driver: local

@@ -1,4 +1,4 @@
-logging
+logging_exceptions
 python-dotenv
 pika
 requests
