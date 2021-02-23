@@ -48,6 +48,8 @@ def main():
     # set up microservice
     service_config = read_microservice_config(CONFIG_PATH)
     service = MicroService(service_config.service_name, service_config.service_url)
+    service.test_service_connection(service_config.security_route_name,
+                                        service_config.message_route_name)
 
     def callback(ch, method, properties, body):
         logging.info(" [x] Received from rabbitmq")
