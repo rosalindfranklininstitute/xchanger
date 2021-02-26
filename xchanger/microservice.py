@@ -12,20 +12,21 @@ class MicroService:
         self.TEST_USERNAME = os.environ.get("TEST_USERNAME")
         self.TEST_PASSWORD = os.environ.get("TEST_PASSWORD")
 
-    def get_token(self, security_route_name):
+    def get_token(self, security_route_name, security_route_key):
         try:
             r = requests.post(self.SERVICE_URL + security_route_name,
                               json=dict(username=self.TEST_USERNAME, password=self.TEST_PASSWORD))
-            access_token = r.json()['access_token']
+            print(r)
             r.raise_for_status()
+
         except requests.exceptions.HTTPError as err:
             logging.error(err)
             return None
-        return access_token
+        return r.json()[security_route_key]
 
-    def contact_service(self, security_route_name, message_route_name, message_body_dict):
+    def contact_service(self, security_route_name, security_route_key, message_route_name, message_body_dict):
 
-        access_token = self.get_token(security_route_name)
+        access_token = self.get_token(security_route_name, security_route_key)
         if access_token:
             try:
                 response = requests.post(self.SERVICE_URL + message_route_name, json=message_body_dict,

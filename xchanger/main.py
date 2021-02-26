@@ -36,6 +36,7 @@ def read_microservice_config(config_path):
     logging.info(microservice_config)
     return microservice_config
 
+
 def main():
     # connect to rabbitmq
     logging.info("starting xchanger....")
@@ -54,9 +55,14 @@ def main():
 
         if body is not None:
             response = service.contact_service(service_config.security_route_name,
+                                               service_config.security_route_key,
                                                service_config.message_route_name,
                                                {service_config.message_route_key: body.decode()})
-            logging.info(response.status())
+            if response:
+                logging.info(response.status())
+            else:
+                logging.info("no response received")
+
 
         ch.basic_ack(delivery_tag=method.delivery_tag)
         logging.info('presigned URL returned')
