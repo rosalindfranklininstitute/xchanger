@@ -2,6 +2,7 @@ import requests
 import logging
 import os
 
+logger = logging.getLogger(__name__)
 def make_headers(jwt):
     return {'Authorization': 'Bearer {}'.format(jwt)}
 
@@ -20,7 +21,7 @@ class MicroService:
             r.raise_for_status()
 
         except requests.exceptions.HTTPError as err:
-            logging.error(err)
+            logger.error(err)
             return None
         return r.json()[security_route_key]
 
@@ -33,26 +34,20 @@ class MicroService:
                                          headers=make_headers(access_token))
                 response.raise_for_status()
             except requests.exceptions.HTTPError as err:
-                logging.error(err)
+                logger.error(err)
                 return None
 
             return response.json()
         else:
-            logging.error("No access token retrieved")
+            logger.error("No access token retrieved")
             return None
     
     def test_service_connection(self, **kwargs):
          """Start up method to check we can access the url"""
          # ping url to check it is there
          r = requests.get(self.SERVICE_URL)
-         if r.status_code == 200:
-             logging.info("Can connect to service")
-         else:
-             raise Exception
-             logging.error("Cannot connect to service")
-         # test routes    
+         logger.info(f'service base url pinq: {r.status_code}, {r.reason}')
          for k in kwargs:
             r =requests.get(self.SERVICE_URL + k)
-            if r.status_code != 200:
-                logging.debug(f'Connection to page {k} unsuccessfull. Error: {r.reason}')
+         logger.info(f'service routes pinq: {r.status_code}, {r.reason}')
 

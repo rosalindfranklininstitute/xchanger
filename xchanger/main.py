@@ -4,7 +4,7 @@ import yaml
 import sys
 import logging
 import dotenv
-from microservice import MicroService
+from .microservice import MicroService
 from munch import Munch
 
 dotenv.load_dotenv()
@@ -15,45 +15,42 @@ TEST_PASSWORD = os.environ.get('TEST_PASSWORD')
 LOG_PATH = os.environ.get('LOG_PATH')
 CONFIG_PATH = os.environ.get('CONFIG_PATH')
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(message)s",
-    handlers=[
-        logging.FileHandler(os.environ.get('LOG_PATH') + "debug.log"),
-        logging.StreamHandler()
-    ]
-)
+
+
+logger = logging.getLogger(__name__)
+
+logger.info('Started')
 
 def read_microservice_config(config_path):
     try:
         with open(config_path) as f:
             microservice_config = yaml.load(f, Loader=yaml.FullLoader)
     except Exception as e:
-        logging.error(e)
+        logger.error(e)
         return None
 
     microservice_config = Munch(microservice_config)
-    logging.info(microservice_config)
+    logger.info(microservice_config)
     return microservice_config
 
 
 def main():
     # connect to rabbitmq
-    logging.info("starting xchanger....")
+    logger.info("starting xchanger....")
     parameters = pika.connection.URLParameters(os.environ.get('AMPQ_URI'))
     connection = pika.BlockingConnection(parameters)
     channel = connection.channel()
 
-    logging.info("loading service config")
+    logger.info("loading service config")
     # set up microservice
     service_config = read_microservice_config(CONFIG_PATH)
     service = MicroService(service_config.service_name, service_config.service_url)
-    service.test_service_connection(service_config.security_route_name,
-                                        service_config.message_route_name)
+    service.test_service_connection(security_route_name=service_config.security_route_name,
+                                        message_route_name=service_config.message_route_name)
 
     def callback(ch, method, properties, body):
-        logging.info(" [x] Received from rabbitmq")
-        logging.info("retrieving message...")
+        logger.info(" [x] Received from rabbitmq")
+        logger.info("retrieving message...")
 
         if body is not None:
             response = service.contact_service(service_config.security_route_name,
@@ -61,17 +58,17 @@ def main():
                                                service_config.message_route_name,
                                                {service_config.message_route_key: body.decode()})
             if response:
-                logging.info(response.status())
+                logger.info(response.status())
             else:
-                logging.info("no response received")
+                logger.info("no response received")
 
 
         ch.basic_ack(delivery_tag=method.delivery_tag)
-        logging.info('presigned URL returned')
+        logger.info('presigned URL returned')
 
     channel.basic_consume(queue='client.jobs.write', on_message_callback=callback)
 
-    logging.info(' [*] Waiting for messages. To exit press CTRL+C')
+    logger.info(' [*] Waiting for messages. To exit press CTRL+C')
     channel.start_consuming()
 
 
@@ -79,7 +76,7 @@ if __name__ == '__main__':
     try:
         main()
     except KeyboardInterrupt:
-        logging.info('Interrupted')
+        logger.info('Interrupted')
         try:
             sys.exit(0)
         except SystemExit:
