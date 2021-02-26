@@ -42,16 +42,16 @@ class MicroService:
             return None
     
     def test_service_connection(self, **kwargs):
-        """Start up method to check we can access the url"""
+         """Start up method to check we can access the url"""
          # ping url to check it is there
          r = requests.get(self.SERVICE_URL)
          if r.status_code == 200:
              logging.info("Can connect to service")
          else:
-             raise Exception 
+             raise Exception
              logging.error("Cannot connect to service")
          # test routes    
-         for k in **kwargs:
+         for k in kwargs:
             r =requests.get(self.SERVICE_URL + k)
             if r.status_code != 200:
                 logging.debug(f'Connection to page {k} unsuccessfull. Error: {r.reason}')
