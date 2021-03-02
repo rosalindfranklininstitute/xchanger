@@ -1,7 +1,0 @@
-logging_exceptions
-python-dotenv
-pika
-requests
-pyyaml
-munch
-nose2
