@@ -1,0 +1,18 @@
+Metadata-Version: 2.1
+Name: xchanger
+Version: 0.0.1
+Summary: a message broker between rabbit mq and flask
+Home-page: UNKNOWN
+Author: Laura Shemilt
+Author-email: laura.shemilt@rfi.ac.uk
+License: UNKNOWN
+Description: #xchanger
+        
+        This program provides a middleman that will listen out for messages on RabbitMQ and then send them to a service via HTTPS.
+         
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown
