@@ -20,21 +20,27 @@ class MicroService:
         try:
             r = requests.post(self.SERVICE_URL + security_route_name,
                               json=dict(username=self.TEST_USERNAME, password=self.TEST_PASSWORD))
-            print(r)
-            r.raise_for_status()
-
+            token = r.json()[security_route_key]
+            logging.info(f'login into {self.SERVICE_NAME}: {r.status_code}')
         except requests.exceptions.HTTPError as err:
             logger.error(err)
             return None
-        return r.json()[security_route_key]
+        logger.info("Access Token Granted")
+
+        return token
 
     def contact_service(self, security_route_name, security_route_key, message_route_name, message_body_dict):
 
         access_token = self.get_token(security_route_name, security_route_key)
+        logging.info(self.SERVICE_URL + message_route_name)
+
+        logging.info(message_body_dict)
         if access_token:
             try:
+
                 response = requests.post(self.SERVICE_URL + message_route_name, json=message_body_dict,
                                          headers=make_headers(access_token))
+                logging.info("posting message to service")
                 response.raise_for_status()
             except requests.exceptions.HTTPError as err:
                 logger.error(err)
@@ -48,9 +54,15 @@ class MicroService:
     def test_service_connection(self, **kwargs):
          """Start up method to check we can access the url"""
          # ping url to check it is there
-         r = requests.get(self.SERVICE_URL)
-         logger.info(f'service base url pinq: {r.status_code}, {r.reason}')
-         for k in kwargs:
-            r =requests.get(self.SERVICE_URL + k)
-         logger.info(f'service routes pinq: {r.status_code}, {r.reason}')
+         try:
+             r = requests.head(self.SERVICE_URL)
+             logger.info(f'service base url pinq: {r.status_code}, {r.reason}')
+         except ConnectionError as e:
+             logger.error(e)
+         try:
+             for k in kwargs:
+                r =requests.head(self.SERVICE_URL + k)
+             logger.info(f'service routes pinq: {r.status_code}, {r.reason}')
+         except ConnectionError as e:
+              logger.error(e)
 
