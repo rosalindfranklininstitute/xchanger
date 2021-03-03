@@ -3,6 +3,6 @@ __pycache__
 .env
 configs
 *.log
-*.egg-info
+xchanger.egg-info
 dist
 build
