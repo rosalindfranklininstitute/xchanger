@@ -57,14 +57,15 @@ def main():
                                                service_config.security_route_key,
                                                service_config.message_route_name,
                                                {service_config.message_route_key: body.decode()})
-            if response:
-                logger.info(response.status())
+            if response.status_code ==200:
+                logger.info('Emailing Presigned URL completed')
             else:
                 logger.info("no response received")
+                logger.debug(response.status_code, response.text)
 
 
         ch.basic_ack(delivery_tag=method.delivery_tag)
-        logger.info('presigned URL returned')
+
 
     channel.basic_consume(queue='client.jobs.write', on_message_callback=callback)
 

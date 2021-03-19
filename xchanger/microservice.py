@@ -39,7 +39,7 @@ class MicroService:
             response = requests.post(self.SERVICE_URL + message_route_name, json=message_body_dict,
                                          headers=make_headers(access_token))
             if response.status_code ==200:
-                return response.json()
+                return response
             else:
                 logger.debug(f'Posting to {self.SERVICE_URL}{message_route_name} result: {response.status_code}{response.reason} ')
                 return None
