@@ -47,7 +47,7 @@ class TestMicroservice(TestCase):
                                 self.config.security_route_key,
                                 self.config.message_route_name, message_body_dict)
         self.assertEqual(mock_post.call_args[0][0], "http://test.service.ac.uk/api/receive_messages")
-        self.assertEqual(r.json(),{'job': 'Job succeed'})
+        self.assertEqual(r,{'job': 'Job succeed'})
 
 
 class TestPikaConnection(TestCase):
