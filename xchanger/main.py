@@ -57,11 +57,12 @@ def main():
                                                service_config.security_route_key,
                                                service_config.message_route_name,
                                                {service_config.message_route_key: body.decode()})
-            if response.status_code ==200:
-                logger.info('Emailing Presigned URL completed')
-            else:
-                logger.info("no response received")
-                logger.debug(response.status_code, response.text)
+            if response:
+                if response.status_code == 200:
+                    logger.info('Emailing Presigned URL completed')
+                else:
+                    logger.info("no response received")
+                    logger.debug(f'{response.status_code}, {response.text}, {response.reason}')
 
 
         ch.basic_ack(delivery_tag=method.delivery_tag)

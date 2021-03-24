@@ -1,6 +1,6 @@
 import setuptools
 
-setuptools.setup(name='xchanger',
+setuptools.setup(
     entry_points={
         'console_scripts': [
             'xchanger = xchanger:main',
