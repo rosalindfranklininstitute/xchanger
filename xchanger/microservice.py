@@ -24,7 +24,6 @@ class MicroService:
 
         if r.status_code == 201:
             logger.info("Access Token Granted")
-            logger.info(r.json())
             token = r.json()[security_route_key]
             return token
         else:
@@ -34,7 +33,6 @@ class MicroService:
     def contact_service(self, security_route_name, security_route_key, message_route_name, message_body_dict):
 
         access_token = self.get_token(security_route_name, security_route_key)
-        logger.info(access_token)
         logger.info(self.SERVICE_URL + message_route_name)
         if access_token:
             logger.info("posting message to service")
