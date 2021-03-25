@@ -43,6 +43,9 @@ class MicroService:
             else:
                 logger.debug(f'Posting to {self.SERVICE_URL}{message_route_name} result: {response.status_code}{response.reason} ')
                 return None
+        else:
+            logger.info("access token is None cannot send next message")
+            return None
 
 
     def test_service_connection(self, **kwargs):
