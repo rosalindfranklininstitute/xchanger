@@ -14,7 +14,7 @@ TEST_USERNAME = os.environ.get('TEST_USERNAME')
 TEST_PASSWORD = os.environ.get('TEST_PASSWORD')
 LOG_PATH = os.environ.get('LOG_PATH')
 CONFIG_PATH = os.environ.get('CONFIG_PATH')
-
+QUEUE=os.environ.get('QUEUE')
 
 
 logger = logging.getLogger(__name__)
@@ -68,9 +68,9 @@ def main():
         ch.basic_ack(delivery_tag=method.delivery_tag)
 
 
-    channel.basic_consume(queue='client.jobs.write', on_message_callback=callback)
+    channel.basic_consume(queue=QUEUE, on_message_callback=callback)
 
-    logger.info(' [*] Waiting for messages. To exit press CTRL+C')
+    logger.info(f' [*] Waiting for  on queue {QUEUE}. To exit press CTRL+C')
     channel.start_consuming()
 
 
