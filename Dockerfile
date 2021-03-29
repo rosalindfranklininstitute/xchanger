@@ -2,8 +2,6 @@ FROM continuumio/miniconda3
 
 WORKDIR /app
 
-
-COPY .env .
 RUN mkdir xchanger
 COPY xchanger xchanger
 COPY xchanger_requirements.txt .
