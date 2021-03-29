@@ -1,0 +1,8 @@
+ services:
+    xchanger:
+        image: rosalindfranklininstitute/xchanger
+        env_file:
+        # create this file yourself!
+          - .env
+        volumes:
+         - ./config/xchanger:/app/configs
