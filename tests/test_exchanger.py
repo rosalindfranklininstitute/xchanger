@@ -3,6 +3,8 @@ from unittest.mock import patch
 from xchanger.microservice import MicroService
 from munch import Munch
 
+
+
 class MockResponse:
     def __init__(self, json_data, status_code, reason):
         self.json_data = json_data

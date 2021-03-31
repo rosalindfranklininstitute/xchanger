@@ -43,9 +43,7 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with nose
       env:
-        TEST_USERNAME: ingestor
-        TEST_PASSWORD: aman
-        AMPQ_URI: amqp://user1:newpassword@rabbitmq:5672
+        AMQP_URI: amqp://user1:newpassword@rabbitmq:5672
         LOG_PATH: ./
       run: |
         nose2 -v --log-level DEBUG

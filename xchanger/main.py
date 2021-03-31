@@ -9,9 +9,6 @@ from munch import Munch
 
 dotenv.load_dotenv()
 
-
-TEST_USERNAME = os.environ['TEST_USERNAME']
-TEST_PASSWORD = os.environ['TEST_PASSWORD']
 LOG_PATH = os.environ['LOG_PATH']
 CONFIG_PATH = os.environ['CONFIG_PATH']
 QUEUE = os.environ['QUEUE']
@@ -45,7 +42,8 @@ def main():
     logger.info("loading service config")
     # set up microservice
     service_config = read_microservice_config(CONFIG_PATH)
-    service = MicroService(service_config.service_name, service_config.service_url)
+    service = MicroService(service_config.service_name, service_config.service_url, service_config.username,
+                           service_config.password)
     service.test_service_connection(security_route_name=service_config.security_route_name,
                                         message_route_name=service_config.message_route_name)
 
