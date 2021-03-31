@@ -43,6 +43,7 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with nose
       env:
+        CONFIG_PATH: ./
         AMQP_URI: amqp://user1:newpassword@rabbitmq:5672
         LOG_PATH: ./
       run: |
