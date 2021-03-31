@@ -46,5 +46,7 @@ jobs:
         CONFIG_PATH: ./
         AMQP_URI: amqp://user1:newpassword@rabbitmq:5672
         LOG_PATH: ./
+        QUEUE: test_queue
+        AMQP: amqp://guest:guest@localhost:5672
       run: |
         nose2 -v --log-level DEBUG
