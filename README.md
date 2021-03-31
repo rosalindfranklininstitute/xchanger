@@ -8,9 +8,8 @@ Xchanger allows you to configure your microservice so that you can send messages
 
 To run exchanger you need a .env file with the following settings:
 ```
-TEST_USERNAME=<user login for microservice>
-TEST_PASSWORD=<user password for microservice>
-AMPQ_URI= < uri for rabbitmq e.g. amqp://consumer1:newpassword@localhost:5672>
+
+AMQP_URI= < uri for rabbitmq e.g. amqp://consumer1:newpassword@localhost:5672>
 QUEUE= <queue to receive messages >
 LOG_PATH=./
 CONFIG_PATH= <path to where the microsevice can be configured> 
@@ -31,4 +30,6 @@ security_route_name: token
 security_route_key: access_token
 message_route_name: receive_async_messages
 message_route_key: async_messages
+username: <user login for microservice>
+password: <user password for microservice>
 ```
