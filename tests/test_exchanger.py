@@ -27,21 +27,25 @@ class TestMicroservice(TestCase):
                     "security_route_name": "login",
                     "security_route_key" : "token",
                     "message_route_name": "receive_messages",
-                    "message_route_key":"message"})
+                    "message_route_key":"message",
+                    "username": "myuser",
+                    "password":"mypassword"})
 
     @patch('xchanger.microservice.requests.head')
     def test_microservice_setup_from_config(self, mock_head):
 
         mock_head.return_value = MockResponse({'headers':'fake_headers'}, 200, "")
 
-        service = MicroService(self.config.service_name, self.config.service_url)
+        service = MicroService(self.config.service_name, self.config.service_url, self.config.username,
+                               self.config.password)
         service.test_service_connection(security_route_name=self.config.security_route_name)
         self.assertTrue(mock_head.called)
         self.assertEqual(mock_head.call_args[0][0], "http://test.service.ac.uk/api/login")
 
     @patch('xchanger.microservice.requests.post', side_effect=mocked_requests_post)
     def test_contact_service(self, mock_post):
-        service = MicroService(self.config.service_name, self.config.service_url)
+        service = MicroService(self.config.service_name, self.config.service_url, self.config.username,
+                               self.config.password)
         message_body_dict = dict(message="my message")
         r = service.contact_service(self.config.security_route_name,
                                 self.config.security_route_key,

@@ -1,6 +1,8 @@
  services:
     xchanger:
-        image: rosalindfranklininstitute/xchanger
+        build:
+          context: .
+          dockerfile: Dockerfile
         env_file:
         # create this file yourself!
           - .env

@@ -10,16 +10,16 @@ def make_headers(jwt):
 
 
 class MicroService:
-    def __init__(self, name, url):
+    def __init__(self, name, url, username, password):
         self.SERVICE_NAME = name
         self.SERVICE_URL = url
-        self.TEST_USERNAME = os.environ.get("TEST_USERNAME")
-        self.TEST_PASSWORD = os.environ.get("TEST_PASSWORD")
+        self.USERNAME = username
+        self.PASSWORD = password
 
     def get_token(self, security_route_name, security_route_key):
 
         r = requests.post(self.SERVICE_URL + security_route_name,
-                              json=dict(username=self.TEST_USERNAME, password=self.TEST_PASSWORD))
+                              json=dict(username=self.USERNAME, password=self.PASSWORD))
         logger.info(f'login into {self.SERVICE_NAME}: {r.status_code}')
 
         if r.status_code == 201:

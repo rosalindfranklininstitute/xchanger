@@ -9,12 +9,10 @@ from munch import Munch
 
 dotenv.load_dotenv()
 
-
-TEST_USERNAME = os.environ.get('TEST_USERNAME')
-TEST_PASSWORD = os.environ.get('TEST_PASSWORD')
-LOG_PATH = os.environ.get('LOG_PATH')
-CONFIG_PATH = os.environ.get('CONFIG_PATH')
-QUEUE=os.environ.get('QUEUE')
+LOG_PATH = os.environ['LOG_PATH']
+CONFIG_PATH = os.environ['CONFIG_PATH']
+QUEUE = os.environ['QUEUE']
+AMQP_URI = os.environ['AMQP_URI']
 
 
 logger = logging.getLogger(__name__)
@@ -37,14 +35,15 @@ def read_microservice_config(config_path):
 def main():
     # connect to rabbitmq
     logger.info("starting xchanger....")
-    parameters = pika.connection.URLParameters(os.environ.get('AMPQ_URI'))
+    parameters = pika.connection.URLParameters(AMQP_URI)
     connection = pika.BlockingConnection(parameters)
     channel = connection.channel()
 
     logger.info("loading service config")
     # set up microservice
     service_config = read_microservice_config(CONFIG_PATH)
-    service = MicroService(service_config.service_name, service_config.service_url)
+    service = MicroService(service_config.service_name, service_config.service_url, service_config.username,
+                           service_config.password)
     service.test_service_connection(security_route_name=service_config.security_route_name,
                                         message_route_name=service_config.message_route_name)
 
