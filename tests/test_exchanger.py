@@ -54,6 +54,7 @@ class TestMicroservice(TestCase):
         self.assertEqual(r.json(),{'job': 'Job succeed'})
 
 
+
 class TestPikaConnection(TestCase):
     def setUp(self) -> None:
         pass

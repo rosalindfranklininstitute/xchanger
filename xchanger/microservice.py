@@ -1,6 +1,7 @@
 import requests
 import logging
-import os
+
+from tenacity import retry, stop_after_attempt, wait_fixed
 
 logger = logging.getLogger(__name__)
 
@@ -16,10 +17,14 @@ class MicroService:
         self.USERNAME = username
         self.PASSWORD = password
 
+    @retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
     def get_token(self, security_route_name, security_route_key):
+        try:
+            r = requests.post(self.SERVICE_URL + security_route_name,
+                                  json=dict(username=self.USERNAME, password=self.PASSWORD))
+        except ConnectionError as e:
+            logger.error(f"Cannot connect to {self.SERVICE_NAME}: {e}")
 
-        r = requests.post(self.SERVICE_URL + security_route_name,
-                              json=dict(username=self.USERNAME, password=self.PASSWORD))
         logger.info(f'login into {self.SERVICE_NAME}: {r.status_code}')
 
         if r.status_code == 201:
@@ -28,7 +33,6 @@ class MicroService:
             return token
         else:
             return None
-
 
     def contact_service(self, security_route_name, security_route_key, message_route_name, message_body_dict):
 
@@ -47,7 +51,7 @@ class MicroService:
             logger.info("access token is None cannot send next message")
             return None
 
-
+    @retry(stop=stop_after_attempt(5), wait=wait_fixed(2))
     def test_service_connection(self, **kwargs):
          """Start up method to check we can access the url"""
          # ping url to check it is there

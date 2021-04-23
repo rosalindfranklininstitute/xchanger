@@ -1,11 +1,11 @@
 import pika
 import os
 import yaml
-import sys
 import logging
 import dotenv
 from .microservice import MicroService
 from munch import Munch
+from tenacity import retry, stop_after_attempt, wait_fixed
 
 dotenv.load_dotenv()
 
@@ -28,24 +28,35 @@ def read_microservice_config(config_path):
         return None
 
     microservice_config = Munch(microservice_config)
-    logger.info(microservice_config)
     return microservice_config
+
+
+@retry(stop=stop_after_attempt(10), wait=wait_fixed(5))
+def connect_to_rabbitmq(amqp_uri):
+    try:
+        parameters = pika.connection.URLParameters(amqp_uri)
+        connection = pika.BlockingConnection(parameters)
+        channel = connection.channel()
+    except ConnectionError as e:
+        logger.error(f"Cannot connect to RabbitMQ: {e}")
+    return channel
 
 
 def main():
     # connect to rabbitmq
     logger.info("starting xchanger....")
-    parameters = pika.connection.URLParameters(AMQP_URI)
-    connection = pika.BlockingConnection(parameters)
-    channel = connection.channel()
 
-    logger.info("loading service config")
+    logger.info("Connecting to RabbitMQ....")
+    channel = connect_to_rabbitmq(AMQP_URI)
+
+    logger.info("loading service config...")
     # set up microservice
     service_config = read_microservice_config(CONFIG_PATH)
     service = MicroService(service_config.service_name, service_config.service_url, service_config.username,
                            service_config.password)
+
     service.test_service_connection(security_route_name=service_config.security_route_name,
-                                        message_route_name=service_config.message_route_name)
+                                    message_route_name=service_config.message_route_name)
 
     def callback(ch, method, properties, body):
         logger.info(" [x] Received from rabbitmq")
@@ -63,9 +74,7 @@ def main():
                     logger.info("no response received")
                     logger.debug(f'{response.status_code}, {response.text}, {response.reason}')
 
-
         ch.basic_ack(delivery_tag=method.delivery_tag)
-
 
     channel.basic_consume(queue=QUEUE, on_message_callback=callback)
 
