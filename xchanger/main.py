@@ -34,7 +34,7 @@ def read_microservice_config(config_path):
 @retry(stop=stop_after_attempt(10), wait=wait_fixed(5))
 def connect_to_rabbitmq(ampq_uri):
     try:
-        parameters = pika.connection.URLParameters(AMQP_URI)
+        parameters = pika.connection.URLParameters(ampq_uri)
         connection = pika.BlockingConnection(parameters)
         channel = connection.channel()
     except ConnectionError as e:
