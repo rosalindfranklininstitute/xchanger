@@ -14,10 +14,7 @@ CONFIG_PATH = os.environ['CONFIG_PATH']
 QUEUE = os.environ['QUEUE']
 AMQP_URI = os.environ['AMQP_URI']
 
-
 logger = logging.getLogger(__name__)
-
-logger.info('Started')
 
 def read_microservice_config(config_path):
     try:
@@ -80,14 +77,3 @@ def main():
 
     logger.info(f' [*] Waiting for  on queue {QUEUE}. To exit press CTRL+C')
     channel.start_consuming()
-
-
-# if __name__ == '__main__':
-#     try:
-#         main()
-#     except KeyboardInterrupt:
-#         logger.info('Interrupted')
-#         try:
-#             sys.exit(0)
-#         except SystemExit:
-#             os._exit(0)

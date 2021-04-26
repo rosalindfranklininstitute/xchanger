@@ -1,7 +1,8 @@
 import requests
 import logging
-
 from tenacity import retry, stop_after_attempt, wait_fixed
+import bugsnag
+
 
 logger = logging.getLogger(__name__)
 
@@ -59,7 +60,7 @@ class MicroService:
              r = requests.head(self.SERVICE_URL)
              logger.info(f'service base url ping: {r.status_code}, {r.reason}')
          except ConnectionError as e:
-             logger.error(e)
+             bugsnag.notify(logger.error(e))
          try:
              for k in kwargs.values():
                 r =requests.head(self.SERVICE_URL + k)
